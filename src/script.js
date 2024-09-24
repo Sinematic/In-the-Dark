@@ -30,9 +30,16 @@ const floorHeightTexture = textureLoader.load('./static/textures/Stylized_Stone_
 const floorNormalTexture = textureLoader.load('./static/textures/Stylized_Stone_Floor_001b_normal.png')
 const floorRoughnessTexture = textureLoader.load('./static/textures/Stylized_Stone_Floor_001b_roughness.png')
 
+const wallTexture = textureLoader.load('./static/textures/Concrete_Blocks_007_basecolor.jpg')
+const wallAmbientOcclusionTexture = textureLoader.load('./static/textures/Concrete_Blocks_007_ambientOcclusion.jpg')
+const wallHeightTexture = textureLoader.load('./static/textures/Concrete_Blocks_007_height.jpg')
+const wallNormalTexture = textureLoader.load('./static/textures/Concrete_Blocks_007_normal.jpg')
+const wallRoughnessTexture = textureLoader.load('./static/textures/Concrete_Blocks_007_roughness.jpg')
+
 /**
  * Materials
 */
+
 
 const tilesMaterial = new THREE.MeshStandardMaterial({
     map: tilesTexture,
@@ -40,6 +47,8 @@ const tilesMaterial = new THREE.MeshStandardMaterial({
     normalMap: tilesNormalTexture,
     roughnessMap: tilesRoughnessTexture,
     roughness: 1, 
+    displacementMap: tilesHeightTexture,
+    displacementScale: 0.1
 })
 
 const floorMaterial = new THREE.MeshStandardMaterial({
@@ -47,12 +56,27 @@ const floorMaterial = new THREE.MeshStandardMaterial({
     aoMap: floorAmbientOcclusionTexture,
     normalMap: floorNormalTexture,
     roughnessMap: floorRoughnessTexture,
-    roughness: 1,
+    roughness: 1, 
+    displacementMap: floorHeightTexture,
+    displacementScale: 0.1
+})
+
+const wallMaterial = new THREE.MeshStandardMaterial({
+    map: wallTexture,
+    aoMap: wallAmbientOcclusionTexture,
+    normalMap: wallNormalTexture,
+    roughnessMap: wallRoughnessTexture,
+    roughness: 1,  
+    displacementMap: wallHeightTexture,
+    displacementScale: 0.1
 })
 
 /*
     Objects
 */
+
+const room = new THREE.Group()
+scene.add(room)
 
 const roomWidth = 20
 const roomHeight = 6
@@ -64,17 +88,16 @@ const floor = new THREE.Mesh(
 
 floor.rotation.x = - Math.PI / 2
 floor.position.y = 0
-scene.add(floor)
+room.add(floor)
 
 for(let i = 0; i < 4; i++)
 {
     const wall = new THREE.Mesh(
         new THREE.PlaneGeometry(roomWidth, roomHeight),
-        new THREE.MeshStandardMaterial({ 
-            color: 0xa1a090, 
-            side: THREE.DoubleSide 
-        })
+        wallMaterial
     )
+
+    wall.material.side = THREE.DoubleSide
 
     wall.position.y = 2
 
@@ -100,14 +123,14 @@ for(let i = 0; i < 4; i++)
         wall.position.set(0, roomHeight / 2, roomWidth / 2)
     }
 
-    scene.add(wall)
+    room.add(wall)
 }
 
  /**
  * Lights
 */
 
-const spotLightIssues = [1, 1, 1, 1, 1, 0.3, 0.2, 0.25, 0.25, 1, 1, 1, 0.3, 0.2, 0.25, 0.25, 1, 1, 1, 1, 1, 0.7, 0.65, 0.3, 1, 1, 0.3, 0.2, 0.25, 0.25, 1]
+const spotLightIssues = [0.3, 0.2, 0.25, 1, 0.35, 0.25, 0.52, 0.25, 0.7, 0.65, 0.39, 0.51, 1, 1, 1, 1]
 
 const lightTweaks = gui.addFolder('Lights')
 
@@ -117,7 +140,7 @@ scene.add(ambientLight)
 lightTweaks.add(ambientLight, 'intensity').min(0).max(10).step(0.01).name('Ambient')
 
 const directionalLight = new THREE.DirectionalLight(0xffffff, 0)
-directionalLight.position.set(10, 10, 10)
+directionalLight.position.set(10, 10,)
 scene.add(directionalLight)
 
 lightTweaks.add(directionalLight, 'intensity').min(0).max(10).step(0.01).name('Directional')
@@ -129,10 +152,48 @@ scene.add(spotLight)
 lightTweaks.add(spotLight, 'intensity').min(0).max(20).step(0.01).name('Spotlight')
 lightTweaks.add(spotLight, 'penumbra').min(0).max(1).step(0.001).name('Penumbra')
 
- /**
- * xxxx
+
+
+/*
+*   Game
 */
 
+let moveSpeed = 0.1
+let moveForward = false
+let moveBackward = false
+
+const onKeyUp = (event) => 
+{
+    switch(event.code)
+    {
+        case 'ArrowUp':
+        case 'KeyZ':
+            moveForward = true
+            break
+        case 'ArrowDown':
+        case 'KeyS':
+            moveBackward = true
+            break
+    }
+}
+
+const onKeyDown = (event) => 
+    {
+        switch(event.code)
+        {
+            case 'ArrowUp':
+            case 'KeyZ':
+                moveForward = false
+                break
+            case 'ArrowDown':
+            case 'KeyS':
+                moveBackward = false
+                break
+        }
+    }
+
+document.addEventListener('keydown', onKeyUp)
+document.addEventListener('keyup', onKeyDown)
 
 /**
  * Sizes
@@ -168,9 +229,11 @@ scene.add(camera)
 // Controls
 const controls = new OrbitControls(camera, canvas)
 controls.enableDamping = true
-const fixedAngle = Math.PI / 3
 
-controls.minDistance = 1
+const fixedAngle = Math.PI / 3
+// const fixedHeight = 2
+
+controls.minDistance = 1.2
 controls.maxDistance = (roomWidth / 2) - 0.1
 
 controls.minPolarAngle = fixedAngle
@@ -196,12 +259,11 @@ const clock = new THREE.Clock()
 const tick = () =>
 {
     const elapsedTime = clock.getElapsedTime()
-    console.log(elapsedTime)
 
-    // if(Math.floor(elapsedTime) % 5 == 0) // Mise en place d'une animation approximative de problèmes de lumières
-    // {
-    //     spotLight.intensity = 13 * spotLightIssues[Math.floor(elapsedTime * 23) % spotLightIssues.length]
-    // }
+    if(Math.floor(elapsedTime) % 5 == 0) // Mise en place d'une animation approximative de problèmes de lumières
+    {
+        spotLight.intensity = 13 * spotLightIssues[Math.floor(elapsedTime * 23) % spotLightIssues.length]
+    } else spotLight.intensity = spotLightIssues[spotLightIssues.length -1] * 13
 
     controls.update()
 
