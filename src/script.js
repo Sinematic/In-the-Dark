@@ -18,23 +18,27 @@ const scene = new THREE.Scene()
 
 const textureLoader = new THREE.TextureLoader()
 
-const tilesTexture = textureLoader.load('./static/textures/Stylized_Terracotta_Tiles_001_basecolor.png')
-const tilesAmbientOcclusionTexture = textureLoader.load('./static/textures/Stylized_Terracotta_Tiles_001_ambientOcclusion.png')
-const tilesHeightTexture = textureLoader.load('./static/textures/Stylized_Terracotta_Tiles_001_height.png')
-const tilesNormalTexture = textureLoader.load('./static/textures/Stylized_Terracotta_Tiles_001_normal.png')
-const tilesRoughnessTexture = textureLoader.load('./static/textures/Stylized_Terracotta_Tiles_001_roughness.png')
+const tilesTexture = textureLoader.load('./textures/Stylized_Terracotta_Tiles_001_basecolor.png')
+const tilesAmbientOcclusionTexture = textureLoader.load('./textures/Stylized_Terracotta_Tiles_001_ambientOcclusion.png')
+const tilesHeightTexture = textureLoader.load('./textures/Stylized_Terracotta_Tiles_001_height.png')
+const tilesNormalTexture = textureLoader.load('./textures/Stylized_Terracotta_Tiles_001_normal.png')
+const tilesRoughnessTexture = textureLoader.load('./textures/Stylized_Terracotta_Tiles_001_roughness.png')
+tilesTexture.colorSpace = THREE.SRGBColorSpace
 
-const floorTexture = textureLoader.load('./static/textures/Stylized_Stone_Floor_001b_basecolor.png')
-const floorAmbientOcclusionTexture = textureLoader.load('./static/textures/Stylized_Stone_Floor_001b_ambientOcclusion.png')
-const floorHeightTexture = textureLoader.load('./static/textures/Stylized_Stone_Floor_001b_height.png')
-const floorNormalTexture = textureLoader.load('./static/textures/Stylized_Stone_Floor_001b_normal.png')
-const floorRoughnessTexture = textureLoader.load('./static/textures/Stylized_Stone_Floor_001b_roughness.png')
+const floorTexture = textureLoader.load('./textures/Stylized_Stone_Floor_001b_basecolor.png')
+const floorAmbientOcclusionTexture = textureLoader.load('./textures/Stylized_Stone_Floor_001b_ambientOcclusion.png')
+const floorHeightTexture = textureLoader.load('./textures/Stylized_Stone_Floor_001b_height.png')
+const floorNormalTexture = textureLoader.load('./textures/Stylized_Stone_Floor_001b_normal.png')
+const floorRoughnessTexture = textureLoader.load('./textures/Stylized_Stone_Floor_001b_roughness.png')
+floorTexture.colorSpace = THREE.SRGBColorSpace
 
-const wallTexture = textureLoader.load('./static/textures/Concrete_Blocks_007_basecolor.jpg')
-const wallAmbientOcclusionTexture = textureLoader.load('./static/textures/Concrete_Blocks_007_ambientOcclusion.jpg')
-const wallHeightTexture = textureLoader.load('./static/textures/Concrete_Blocks_007_height.jpg')
-const wallNormalTexture = textureLoader.load('./static/textures/Concrete_Blocks_007_normal.jpg')
-const wallRoughnessTexture = textureLoader.load('./static/textures/Concrete_Blocks_007_roughness.jpg')
+const wallTexture = textureLoader.load('./textures/Concrete_Blocks_007_basecolor.jpg')
+const wallAmbientOcclusionTexture = textureLoader.load('./textures/Concrete_Blocks_007_ambientOcclusion.jpg')
+const wallHeightTexture = textureLoader.load('./textures/Concrete_Blocks_007_height.jpg')
+const wallNormalTexture = textureLoader.load('./textures/Concrete_Blocks_007_normal.jpg')
+const wallRoughnessTexture = textureLoader.load('./textures/Concrete_Blocks_007_roughness.jpg')
+wallTexture.colorSpace = THREE.SRGBColorSpace
+
 
 /**
  * Materials
@@ -272,3 +276,6 @@ const tick = () =>
 }
 
 tick()
+
+
+// gui.show( false )
