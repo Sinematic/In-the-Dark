@@ -32,6 +32,12 @@ const floorNormalTexture = textureLoader.load('./textures/Stylized_Stone_Floor_0
 const floorRoughnessTexture = textureLoader.load('./textures/Stylized_Stone_Floor_001b_roughness.png')
 floorTexture.colorSpace = THREE.SRGBColorSpace
 
+const dirtyFloorTexture = textureLoader.load('./textures/Monastery_Stone_Floor_basecolor.jpg')
+const dirtyFloorNormalTexture = textureLoader.load('./textures/Monastery_Stone_Floor_normal.jpg')
+const dirtyFloorARMTexture = textureLoader.load('./textures/Monastery_Stone_Floor_ARM.jpg')
+const dirtyFloorHeightTexture = textureLoader.load('./textures/Monastery_Stone_Floor_height')
+dirtyFloorTexture.colorSpace = THREE.SRGBColorSpace
+
 const wallTexture = textureLoader.load('./textures/Concrete_Blocks_007_basecolor.jpg')
 const wallAmbientOcclusionTexture = textureLoader.load('./textures/Concrete_Blocks_007_ambientOcclusion.jpg')
 const wallHeightTexture = textureLoader.load('./textures/Concrete_Blocks_007_height.jpg')
@@ -39,11 +45,40 @@ const wallNormalTexture = textureLoader.load('./textures/Concrete_Blocks_007_nor
 const wallRoughnessTexture = textureLoader.load('./textures/Concrete_Blocks_007_roughness.jpg')
 wallTexture.colorSpace = THREE.SRGBColorSpace
 
+const chestTexture = textureLoader.load('./textures/Wooden_Crate_basecolor.jpg')
+const chestARMTexture = textureLoader.load('./textures/Wooden_Crate_ARM.jpg')
+const chestNormalTexture = textureLoader.load('./textures/Wooden_Crate_normal.jpg')
+const chestMetalTexture = textureLoader.load('./textures/Wooden_Crate_metal.jpg')
+chestTexture.colorSpace = THREE.SRGBColorSpace
 
 /**
  * Materials
 */
 
+const dirtyFloorMaterial = new THREE.MeshStandardMaterial({
+    map: dirtyFloorTexture,
+    aoMap: dirtyFloorARMTexture,
+    normalMap: dirtyFloorNormalTexture,
+    roughnessMap: dirtyFloorARMTexture,
+    roughness: 1,
+    displacementMap: dirtyFloorHeightTexture,
+    displacementScale: 0.1,
+    metalnessMap: dirtyFloorARMTexture,
+    metalness: 0.1
+})
+
+dirtyFloorTexture.repeat.set(4, 3)
+dirtyFloorTexture.wrapS = THREE.RepeatWrapping
+dirtyFloorTexture.wrapT = THREE.RepeatWrapping
+dirtyFloorARMTexture.repeat.set(4, 3)
+dirtyFloorARMTexture.wrapS = THREE.RepeatWrapping
+dirtyFloorARMTexture.wrapT = THREE.RepeatWrapping
+dirtyFloorHeightTexture.repeat.set(4, 3)
+dirtyFloorHeightTexture.wrapS = THREE.RepeatWrapping
+dirtyFloorHeightTexture.wrapT = THREE.RepeatWrapping
+dirtyFloorNormalTexture.repeat.set(4, 3)
+dirtyFloorNormalTexture.wrapS = THREE.RepeatWrapping
+dirtyFloorNormalTexture.wrapT = THREE.RepeatWrapping
 
 const tilesMaterial = new THREE.MeshStandardMaterial({
     map: tilesTexture,
@@ -56,12 +91,12 @@ const tilesMaterial = new THREE.MeshStandardMaterial({
 })
 
 const floorMaterial = new THREE.MeshStandardMaterial({
-    map: floorTexture,
-    aoMap: floorAmbientOcclusionTexture,
-    normalMap: floorNormalTexture,
-    roughnessMap: floorRoughnessTexture,
+    map: dirtyFloorTexture,
+    aoMap: dirtyFloorARMTexture,
+    normalMap: dirtyFloorNormalTexture,
+    roughnessMap: dirtyFloorARMTexture,
     roughness: 1, 
-    displacementMap: floorHeightTexture,
+    displacementMap: dirtyFloorHeightTexture,
     displacementScale: 0.1
 })
 
@@ -75,15 +110,42 @@ const wallMaterial = new THREE.MeshStandardMaterial({
     displacementScale: 0.1
 })
 
+const chestMaterial = new THREE.MeshStandardMaterial({
+    map: chestTexture,
+    aoMap: chestARMTexture,
+    normalMap: chestNormalTexture,
+    roughnessMap: chestARMTexture,
+    aoMap: chestARMTexture,
+    metalnessMap: chestMetalTexture
+})
+
 /*
     Objects
 */
 
+/*
+const chest = new THREE.Mesh(
+    new THREE.BoxGeometry(1.6, 0.8, 0.9),
+    chestMaterial
+)*/
+chest.position.y = chest.geometry.parameters.height * 0.5
+
+scene.add(chest)
+
+gui.add(chest.position, 'x').min(-13).max(13).step(0.01).name("Chest X position")
+gui.add(chest.position, 'z').min(-13).max(13).step(0.01).name("Chest Z position")
+
 const room = new THREE.Group()
 scene.add(room)
 
-const roomWidth = 20
+const roomWidth = 25
 const roomHeight = 6
+
+chest.position.set(
+    (Math.random() - 0.5) * roomWidth , 
+    chest.geometry.parameters.height * 0.5, 
+    (roomWidth * 0.5) - (chest.geometry.parameters.depth * 0.5)
+)
 
 const floor = new THREE.Mesh(
     new THREE.PlaneGeometry(roomWidth, roomWidth),
@@ -138,7 +200,7 @@ const spotLightIssues = [0.3, 0.2, 0.25, 1, 0.35, 0.25, 0.52, 0.25, 0.7, 0.65, 0
 
 const lightTweaks = gui.addFolder('Lights')
 
-const ambientLight = new THREE.AmbientLight(0xffffff, 0)
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.1)
 scene.add(ambientLight)
 
 lightTweaks.add(ambientLight, 'intensity').min(0).max(10).step(0.01).name('Ambient')
@@ -237,8 +299,8 @@ controls.enableDamping = true
 const fixedAngle = Math.PI / 3
 // const fixedHeight = 2
 
-controls.minDistance = 1.2
-controls.maxDistance = (roomWidth / 2) - 0.1
+controls.minDistance = 2.2
+controls.maxDistance = (roomWidth * 0.5 ) - 0.1
 
 controls.minPolarAngle = fixedAngle
 controls.maxPolarAngle = fixedAngle
@@ -278,4 +340,4 @@ const tick = () =>
 tick()
 
 
-// gui.show( false )
+gui.show( false )
