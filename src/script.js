@@ -123,11 +123,11 @@ const chestMaterial = new THREE.MeshStandardMaterial({
     Objects
 */
 
-/*
+
 const chest = new THREE.Mesh(
     new THREE.BoxGeometry(1.6, 0.8, 0.9),
     chestMaterial
-)*/
+)
 chest.position.y = chest.geometry.parameters.height * 0.5
 
 scene.add(chest)
@@ -200,24 +200,34 @@ const spotLightIssues = [0.3, 0.2, 0.25, 1, 0.35, 0.25, 0.52, 0.25, 0.7, 0.65, 0
 
 const lightTweaks = gui.addFolder('Lights')
 
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.1)
+/*const ambientLight = new THREE.AmbientLight(0xffffff, 0.1)
 scene.add(ambientLight)
 
 lightTweaks.add(ambientLight, 'intensity').min(0).max(10).step(0.01).name('Ambient')
-
+*/
 const directionalLight = new THREE.DirectionalLight(0xffffff, 0)
 directionalLight.position.set(10, 10,)
 scene.add(directionalLight)
 
 lightTweaks.add(directionalLight, 'intensity').min(0).max(10).step(0.01).name('Directional')
 
-const spotLight = new THREE.SpotLight(0xfffcaa, 13, 30, Math.PI / 4, 0.48)
+const spotLight = new THREE.SpotLight(0xfffcaa, 1, 30, Math.PI / 4, 0.48)
 spotLight.position.y = 9
 scene.add(spotLight)
 
-lightTweaks.add(spotLight, 'intensity').min(0).max(20).step(0.01).name('Spotlight')
+lightTweaks.add(spotLight, 'intensity').min(0).max(1).step(0.001).name('Spotlight')
+lightTweaks.add(spotLight, 'distance').min(0).max(1).step(0.01).name('Distance')
 lightTweaks.add(spotLight, 'penumbra').min(0).max(1).step(0.001).name('Penumbra')
 
+
+/**
+ * Sounds
+ */
+
+const buzz = new Audio('/sounds/buzzing-lamp.mp3')
+buzz.loop = true
+buzz.volume = 0.15
+buzz.play()
 
 
 /*
@@ -340,4 +350,4 @@ const tick = () =>
 tick()
 
 
-gui.show( false )
+//gui.show( false )
